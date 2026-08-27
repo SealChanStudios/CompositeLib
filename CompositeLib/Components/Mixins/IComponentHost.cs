@@ -125,18 +125,19 @@ public interface IComponentHost : IMixin<IComponentHost>
   {
     var state = host.MixinState.Get<ComponentHostState>();
 
-    if (!state.ComponentNodes.TryGetValue(typeof(T), out var node))
+    var componentNodes = state.ComponentNodes;
+    if (!componentNodes.TryGetValue(typeof(T), out var node))
     {
       throw new InvalidOperationException();
     }
+    var components = state.Components;
 
-    var component = state.Components[typeof(T)];
+    var component = components[typeof(T)];
     var keys = ComponentTypeResolver.Resolve(component.GetType()); // cached
     foreach (var key in keys)
-
     {
-      state.Components.Remove(key);
-      state.ComponentNodes.Remove(key);
+      components.Remove(key);
+      componentNodes.Remove(key);
     }
 
     host.GetSelf().RemoveChild(node);
